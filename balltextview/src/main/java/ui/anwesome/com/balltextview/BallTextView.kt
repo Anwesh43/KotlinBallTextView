@@ -32,7 +32,7 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
             canvas.save()
             canvas.rotate(360f)
             canvas.scale(1f,1f)
-            canvas.drawText(text,-paint.measureText(text)/2,size/12,paint)
+            canvas.drawText(text,-paint.measureText(text)/2,size/9,paint)
             canvas.restore()
             canvas.restore()
         }
@@ -41,6 +41,31 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
         }
         fun startUpdating(startcb:()->Unit) {
 
+        }
+    }
+    data class BallTextState(var dir:Float = 0f,var jDir:Int = 1,var j:Int = 0,var prevScale:Float = 0f) {
+        val scales:Array<Float> = arrayOf(0f,0f)
+        fun update(stopcb:(Float)->Unit) {
+            scales[j] += 0.1f*dir
+            if(Math.abs(scales[j] - prevScale) > 1) {
+                j+=jDir
+                scales[j] = prevScale + dir
+                if(j == scales.size || j == -1) {
+                    jDir *= -1
+                    dir = 0f
+                    prevScale = scales[j]
+                    stopcb(prevScale)
+                }
+            }
+        }
+        fun startUpdating(startcb:()->Unit) {
+            if(dir == 0f) {
+                dir = 1-2*prevScale
+                startcb()
+            }
+        }
+        fun executeForScale(cb:(Float)->Unit, n:Int) {
+            cb(scales[n])
         }
     }
 }
