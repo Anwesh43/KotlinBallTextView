@@ -3,6 +3,7 @@ package ui.anwesome.com.balltextview
 /**
  * Created by anweshmishra on 03/02/18.
  */
+import android.app.Activity
 import android.content.*
 import android.graphics.*
 import android.view.*
@@ -121,6 +122,25 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
             ballText?.startUpdating {
                 animator.start()
             }
+        }
+    }
+    companion object {
+        var x = 0f
+        var y = 0f
+        fun create(activity:Activity,text:String,vararg colors:Int):BallTextView {
+            val view = BallTextView(activity,text)
+            if(colors.size == 1) {
+                view.color = colors[0]
+            }
+            val size = DimensionUtil.getSize(activity)
+            x += size.x/3
+            if(x > size.x)  {
+                x = 0f
+                y += size.x/3
+            }
+            view.x = x
+            view.y = y
+            return view
         }
     }
 }
