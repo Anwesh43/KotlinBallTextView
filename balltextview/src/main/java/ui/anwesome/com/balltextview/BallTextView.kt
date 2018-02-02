@@ -55,10 +55,11 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
         fun update(stopcb:(Float)->Unit) {
             scales[j] += 0.1f*dir
             if(Math.abs(scales[j] - prevScale) > 1) {
-                j+=jDir
                 scales[j] = prevScale + dir
+                j+=jDir
                 if(j == scales.size || j == -1) {
                     jDir *= -1
+                    j += jDir
                     dir = 0f
                     prevScale = scales[j]
                     stopcb(prevScale)
@@ -134,13 +135,14 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
                 view.color = colors[0]
             }
             val size = DimensionUtil.getSize(activity)
+            view.x = x
+            view.y = y
             x += size.x/3
-            if(x > size.x)  {
+            if(x >= size.x)  {
                 x = 0f
                 y += size.x/3
             }
-            view.x = x
-            view.y = y
+            activity.addContentView(view,ViewGroup.LayoutParams(size.x/3,size.x/3))
             return view
         }
     }
