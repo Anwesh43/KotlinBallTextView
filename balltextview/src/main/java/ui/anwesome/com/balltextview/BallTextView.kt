@@ -98,4 +98,29 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
             }
         }
     }
+    data class Renderer(var view:BallTextView, var time:Int = 0) {
+        var ballText:BallText?=null
+        val animator = Animator(view)
+        fun render(canvas:Canvas, paint:Paint) {
+            if (time == 0) {
+                val w = canvas.width.toFloat()
+                val h = canvas.height.toFloat()
+                val size = Math.min(w, h)
+                ballText = BallText(size, view.text, view.color)
+            }
+            canvas.drawColor(Color.parseColor("#00000000"))
+            ballText?.draw(canvas, paint)
+            time++
+            animator.animate {
+                ballText?.update {
+                    animator.stop()
+                }
+            }
+        }
+        fun handleTap() {
+            ballText?.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
