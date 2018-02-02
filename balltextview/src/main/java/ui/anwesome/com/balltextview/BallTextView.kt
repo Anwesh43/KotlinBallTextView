@@ -128,8 +128,8 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
     companion object {
         var x = 0f
         var y = 0f
-        fun create(activity:Activity,text:String,vararg colors:Int):BallTextView {
-            val view = BallTextView(activity,text)
+        fun create(activity:Activity,letter:Char,vararg colors:Int):BallTextView {
+            val view = BallTextView(activity,"$letter")
             if(colors.size == 1) {
                 view.color = colors[0]
             }
