@@ -7,7 +7,6 @@ import android.widget.Toast
 import ui.anwesome.com.balltextview.BallTextView
 
 class MainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BallTextView.create(this,'1')
@@ -19,5 +18,13 @@ class MainActivity : AppCompatActivity() {
         },{
             Toast.makeText(this,"collapsed",Toast.LENGTH_SHORT).show()
         })
+    }
+    override fun onPause() {
+        super.onPause()
+        BallTextView.pause()
+    }
+    override fun onResume() {
+        super.onResume()
+        BallTextView.resume()
     }
 }
