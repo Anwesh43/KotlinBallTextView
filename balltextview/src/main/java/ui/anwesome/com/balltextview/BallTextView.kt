@@ -11,6 +11,10 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val renderer = Renderer(this)
     var ballTextExpandListener:BallTextExpandListener?=null
+    var animator:BallTextAnimator?=null
+    var ballTextAnimation = BallTextAnimation.create(this,{
+        !renderer.animator.animated
+    })
     fun addBallTextExpandListener(onExpandListener: ()->Unit, onCollapseListener: ()->Unit) {
         ballTextExpandListener = BallTextExpandListener(onExpandListener, onCollapseListener)
     }
@@ -20,7 +24,9 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
     override fun onTouchEvent(event:MotionEvent):Boolean {
         when(event.action) {
             MotionEvent.ACTION_DOWN -> {
-                renderer.handleTap()
+                renderer.handleTap {
+                    animator?.add(ballTextAnimation)
+                }
             }
         }
         return true
@@ -84,13 +90,6 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
         fun animate(updatecb:()->Unit) {
             if(animated) {
                 updatecb()
-                try {
-                    Thread.sleep(50)
-                    view.invalidate()
-                }
-                catch(ex:Exception) {
-
-                }
             }
         }
         fun start() {
@@ -128,9 +127,10 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
                 }
             }
         }
-        fun handleTap() {
+        fun handleTap(cb :()->Unit) {
             ballText?.startUpdating {
                 animator.start()
+                cb()
             }
         }
     }
@@ -138,8 +138,10 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
     companion object {
         var x = 0f
         var y = 0f
+        var ballTextAnimator = BallTextAnimator()
         fun create(activity:Activity,letter:Char,vararg colors:Int):BallTextView {
             val view = BallTextView(activity,"$letter")
+            view.animator = ballTextAnimator
             if(colors.size == 1) {
                 view.color = colors[0]
             }
@@ -151,8 +153,15 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
                 x = 0f
                 y += size.x/3
             }
+            view.animator = ballTextAnimator
             activity.addContentView(view,ViewGroup.LayoutParams(size.x/3,size.x/3))
             return view
+        }
+        fun pause() {
+            ballTextAnimator.pause()
+        }
+        fun resume() {
+            ballTextAnimator.resume()
         }
     }
 }
