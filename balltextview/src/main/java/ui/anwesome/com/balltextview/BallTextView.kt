@@ -10,6 +10,10 @@ import android.view.*
 class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor("#ef5350")):View(ctx) {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     val renderer = Renderer(this)
+    var ballTextExpandListener:BallTextExpandListener?=null
+    fun addBallTextExpandListener(onExpandListener: ()->Unit, onCollapseListener: ()->Unit) {
+        ballTextExpandListener = BallTextExpandListener(onExpandListener, onCollapseListener)
+    }
     override fun onDraw(canvas:Canvas) {
         renderer.render(canvas,paint)
     }
@@ -117,6 +121,10 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
             animator.animate {
                 ballText?.update {
                     animator.stop()
+                    when(it) {
+                        0f -> view.ballTextExpandListener?.onCollapseListener?.invoke()
+                        1f -> view.ballTextExpandListener?.onExpandListener?.invoke()
+                    }
                 }
             }
         }
@@ -126,6 +134,7 @@ class BallTextView(ctx:Context,var text:String,var color:Int = Color.parseColor(
             }
         }
     }
+    data class BallTextExpandListener(var onExpandListener:()->Unit,var onCollapseListener:()->Unit)
     companion object {
         var x = 0f
         var y = 0f
